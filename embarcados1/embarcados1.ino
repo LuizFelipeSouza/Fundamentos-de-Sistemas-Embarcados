@@ -5,6 +5,7 @@
 const int trigPin = 13;
 const int echoPin = 12;
 const int pino = 11;
+const int gan = 9;
 
 
 int Frente(){
@@ -23,7 +24,6 @@ int virarEsq(){
   return B00001000; // baixo e o esquerdo
 }
 
-
 int main(void){
   unsigned char sensor_Frente; 
   unsigned char sensor_Traz;
@@ -33,20 +33,24 @@ int main(void){
   DDRD = DDRD |B00111100;
   Serial.begin (9600);
   Serial.println("Ultrasom");
+  _delay_ms(1000);
   pinMode(pino,OUTPUT);
+  pinMode(gan,OUTPUT);
   
   while(1){
     //PORTD = Frente();
     sensor_Frente = (PIND & 128)>> 7; 
     sensor_Traz =  (PIND & 64)>> 6;
     digitalWrite(pino,HIGH);
-  /* // Trigger
+    digitalWrite(gan,HIGH);
+   
+   // Trigger
    PORTB = 0B00000000;  
    delayMicroseconds(2);
    PORTB = 0B01100000;
    delayMicroseconds(10);
    PORTB = 0B00000000;
-   */
+   
    // detectar eco sem uso de biblioteca
    duracao = 0;
    while (!(PINB & 16)>> 4);
@@ -60,7 +64,7 @@ int main(void){
     distancia= duracao * 0.0546; //calibracao com sensor
     Serial.println(distancia);        
    }
-    if(distancia > 25) {
+    /*if(distancia > 25) {
       PORTD = Frente();
       _delay_ms(10000);
       PORTD = virarEsq();
@@ -68,19 +72,22 @@ int main(void){
     else{
       PORTD = B00000000;
       _delay_ms(1000);
-    }
+    }*/
     if (sensor_Frente == 1){
      PORTD = Re();
      _delay_ms(2000);
-     PORTD = virarEsq();
+    // PORTD = virarEsq();
+     //_delay_ms(2000);
     }  
     if (sensor_Traz == 1){
         PORTD = Frente();
         _delay_ms(2000);
-        PORTD = virarDir();
+        //PORTD = virarDir();
+       // _delay_ms(2000);
     }
     if (sensor_Traz == 0 && sensor_Frente == 0 ){
-      PORTD = B00100100; 
+      PORTD = Frente(); 
+      _delay_ms(5000);
     }
   }
 }
