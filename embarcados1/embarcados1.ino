@@ -141,11 +141,11 @@ int main(void){
      Serial.println(distancia);
     }*/
      if (sensor_Frente){
-       atraso(5000,2);
+       atraso(5000,1);
        atraso(2000,3);
      }
      if (sensor_Traz){
-       atraso(5000,1);
+       atraso(5000,2);
        atraso(2000,4);
      } 
      if((!sensor_Frente) && (!sensor_Traz)){
