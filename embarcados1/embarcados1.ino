@@ -139,7 +139,7 @@ int main(void){
     { 
      distancia= duracao * 0.0546; //calibracao com sensor
      Serial.println(distancia);
-    }*/
+    }
      if (sensor_Frente){
        atraso(5000,1);
        atraso(2000,3);
