@@ -48,20 +48,21 @@ unsigned long nossamillis() {
   return millis_return;
 }
 
+// Funcao de locomocao que retorna porta faz robo ir para frente
 int Frente() {
   return 0B00011000;
 }
-
+// Funcao de locomocao que retorna porta faz robo ir para tras
 int Re() {
   return 0B00100100;
 }
-
+// Funcao de locomocao que retorna porta faz robo vira para direita
 int virarDir() {
-  return 0B00100000; // baixo e o direito
+  return 0B00100000; 
 }
-
+// Funcao de locomocao que retorna porta faz robo virar a esquerda
 int virarEsq() {
-  return 0B00001000; // baixo e o esquerdo
+  return 0B00001000; 
 }
 
 /**
@@ -75,15 +76,11 @@ int virarEsq() {
  *                    3 - VirarDir()
  *                    4 - virarEsq()
  * return: void **/
+ 
 void atraso(int intervalo, int funcao) {
   inicia_millis(16000000UL); //clock 16MHz
-  // Serial.begin(9600);
-
-  // int intervalo = 500;
   unsigned long tempo_inicial = 0;
   // Configura pino io atmega para saida
-  // DDRD = B00111100;
-
   unsigned long tempo_final = nossamillis();
   while (tempo_final - tempo_inicial <= intervalo) {
     switch (funcao) {
@@ -105,74 +102,57 @@ void atraso(int intervalo, int funcao) {
   }
 }
 
-int main(void) {
-  unsigned char sensor_Frente;
+int main(void){
+  unsigned char sensor_Frente; 
   unsigned char sensor_Traz;
   unsigned long duracao = 0;
   float distancia;
-  DDRB = DDRB | B00101100;
-  DDRD = DDRD | B00111100;
-  Serial.begin(9600);
+  DDRB = DDRB |0B00101100;
+  DDRD = DDRD |0B00111100;
+  Serial.begin (9600);
   Serial.println("Ultrasom");
   _delay_ms(1000);
-  pinMode(pino, OUTPUT);
-  pinMode(gan, OUTPUT);
-
-  while (1) {
-    //PORTD = Frente();
-    sensor_Frente = (PIND & 128) >> 7;
-    sensor_Traz = (PIND & 64) >> 6;
-    digitalWrite(pino, HIGH);
-    digitalWrite(gan, HIGH);
+  pinMode(pino,OUTPUT);
+  pinMode(gan,OUTPUT);
+  while(1){
+    sensor_Frente = (PIND & 128)>> 7; 
+    sensor_Traz =  (PIND & 64)>> 6;
+    digitalWrite(pino,HIGH);
+    digitalWrite(gan,HIGH);
 
     // Trigger
-   PORTB = 0B00001010;  
-   delayMicroseconds(2);   
-   PORTB = 0B00101010;  
-   delayMicroseconds(10);   
-   PORTB = 0B00001010; 
+    PORTB = 0B00001010;
+    delayMicroseconds(2);
+    PORTB = 0B00101010;
+    delayMicroseconds(10);
+    PORTB = 0B00001010; 
 
     // detectar eco sem uso de biblioteca
     duracao = 0;
-    while (!(PINB & 16) >> 4)
-      ;
-    while ((PINB & 16) >> 4)
+    
+    while (!(PINB & 16)>> 4);
+    while ((PINB & 16)>> 4)
     {
       duracao++;
     }
     if (duracao > 0)
-    {
-      //Serial.println(duracao);
-      distancia = duracao * 0.0546; //calibracao com sensor
-      Serial.println(distancia);
-    }
-    /*if(distancia > 25) {
-      PORTD = Frente();
-      _delay_ms(10000);
-      PORTD = virarEsq();
-    }
-    else{
-      PORTD = B00000000;
-      _delay_ms(1000);
+    { 
+     distancia= duracao * 0.0546; //calibracao com sensor
+     Serial.println(distancia);
     }*/
-    if (sensor_Frente == 1)
-    {
-      PORTD = Re();
-      _delay_ms(2000);
-      // PORTD = virarEsq();
-      //_delay_ms(2000);
-    }
-    if (sensor_Traz == 1)
-    {
-      PORTD = Frente();
-      _delay_ms(2000);
-      //PORTD = virarDir();
-      // _delay_ms(2000);
-    }
-    if (sensor_Traz == 0 && sensor_Frente == 0)
-    {
-      PORTD = Frente();
-      _delay_ms(5000);
-    }
+     if (sensor_Frente){
+       atraso(5000,2);
+       atraso(2000,3);
+     }
+     if (sensor_Traz){
+       atraso(5000,1);
+       atraso(2000,4);
+     } 
+     if((!sensor_Frente) && (!sensor_Traz)){
+       PORTD = Frente(); 
+     }
+     if(distancia < 25){
+       PORTD = Frente();
+     }
   }
 }
